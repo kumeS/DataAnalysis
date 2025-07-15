@@ -30,10 +30,9 @@ jobs:
 
       # R & mcptools 用意
       - uses: r-lib/actions/setup-r@v2
-      - name: Install deps
+      - name: Install essential R packages
         run: |
-          Rscript -e 'install.packages(c("pak","rmarkdown","tidyverse","skimr","ggplot2","pheatmap","VennDiagram","corrplot"))'
-          Rscript -e 'pak::pkg_install("posit-dev/mcptools")'
+          Rscript -e 'install.packages(c("readr","dplyr","ggplot2","pheatmap","corrplot"), repos="https://cran.r-project.org")'
 
       # Claude Code 呼び出し ── task で prompt 切替
       - name: Claude ${{ matrix.task }}
@@ -41,23 +40,21 @@ jobs:
         uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          mcp_config: |
-            { "mcpServers": { "r": {
-                "type": "stdio",
-                "command": "Rscript",
-                "args": ["-e","mcptools::mcp_server()"] } } }
           allowed_tools: |
-            mcp__r__run_code, Edit, FileCreate
+            Bash, Edit, Write, Read
 
           # task 固有プロンプト
           prompt: |
-            You are the R analyst responsible for the **${{ matrix.task }}**
-            stage on metabolomics data `${{ github.event.inputs.csv || 'fasting.csv' }}`.
-            Produce scripts and outputs in the folder `artifacts/${{ matrix.task }}`:
-            - eda: skimr summary for normal vs 12h_fasting groups, correlation matrix, PCA plot
-            - modeling: t-tests for differential metabolites, volcano plot, save significant results as RDS
+            You are the R analyst responsible for the **${{ matrix.task }}** stage on metabolomics data `${{ github.event.inputs.csv || 'fasting.csv' }}`.
+            
+            Create folder `artifacts/${{ matrix.task }}/` and produce:
+            - eda: basic data exploration, summary statistics, correlation matrix, PCA plot
+            - modeling: t-tests comparing normal vs 12h_fasting groups, save significant results
             - viz: heatmap of top differential metabolites, boxplots of key metabolites
-            Save a short Markdown note `note.md` describing your findings about fasting-induced metabolic changes.
+            
+            Use only: readr, dplyr, ggplot2, pheatmap, corrplot packages.
+            Write R scripts and execute with `Rscript script.R`.
+            Save a short `note.md` describing your findings.
 
           claude_env: |
             DATA=${{ github.event.inputs.csv || 'fasting.csv' }}
@@ -77,13 +74,20 @@ jobs:
         with:
           path: _merge
 
-      # 統合レポート：Markdown を結合 → PDF
-      - name: Build final PDF
+      # 統合レポート：Markdown を結合
+      - name: Build final report
         run: |
-          cat _merge/*/note.md > FINAL_REPORT.md
-          pandoc FINAL_REPORT.md -o FINAL_REPORT.pdf
+          echo "# Metabolomics Analysis Report" > FINAL_REPORT.md
+          echo "" >> FINAL_REPORT.md
+          for task in eda modeling viz; do
+            if [ -f "_merge/${task}-outputs/note.md" ]; then
+              echo "## ${task^^} Results" >> FINAL_REPORT.md
+              cat "_merge/${task}-outputs/note.md" >> FINAL_REPORT.md
+              echo "" >> FINAL_REPORT.md
+            fi
+          done
 
       - uses: actions/upload-artifact@v4
         with:
           name: final-report
-          path: FINAL_REPORT.pdf
+          path: FINAL_REPORT.md

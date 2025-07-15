@@ -26,11 +26,10 @@ jobs:
     # 2) R ランタイムを用意 ----------------------------------------------
     - uses: r-lib/actions/setup-r@v2             # 公式アクション:contentReference[oaicite:5]{index=5}
 
-    # 3) R 用 MCP サーバー導入 -------------------------------------------
-    - name: Install mcptools & R packages for metabolomics
+    # 3) R パッケージ導入 (最小限) -------------------------------------------
+    - name: Install essential R packages
       run: |
-        Rscript -e 'install.packages(c("pak","rmarkdown","tidyverse","skimr","ggplot2","pheatmap","VennDiagram","corrplot"), repos="https://cran.r-project.org")'
-        Rscript -e 'pak::pkg_install("posit-dev/mcptools")'
+        Rscript -e 'install.packages(c("readr","dplyr","ggplot2","pheatmap","corrplot"), repos="https://cran.r-project.org")'
 
     # 4) Claude Code を呼び出し ------------------------------------------
     - name: Claude ➜ run full R analysis
@@ -41,49 +40,35 @@ jobs:
 
         ##################  Claude への指示  ##################
         prompt: |
-          **Goal**: Perform a complete metabolomics analysis pipeline in R on the CSV at `${{ github.event.inputs.data_path || 'fasting.csv' }}`.  
+          **Goal**: Perform metabolomics analysis in R on the CSV at `${{ github.event.inputs.data_path || 'fasting.csv' }}`.  
           **Steps**  
-          1. *Data ingestion*: read the CSV with `readr::read_csv()` and handle the metabolite data format.  
-          2. *Basic understanding*: output dimensions, column types, missing-value counts, and sample group information.  
-          3. *Data preprocessing*: log-transform metabolite values, handle missing values, and normalize data.  
-          4. *Descriptive stats*: produce `skimr::skim()` summary for each group (normal vs 12h_fasting).  
-          5. *Analysis*:  
-             - Compare metabolite levels between normal and 12h_fasting groups using t-tests
-             - Perform PCA analysis to visualize sample grouping
-             - Identify significantly different metabolites (p < 0.05)
-             - Create volcano plot and heatmap of top differential metabolites  
-          6. *Interpretation*: write concise insights about fasting-induced metabolic changes (max 500 words).  
-          7. *Report*: create `analysis/metabolomics_report.Rmd` (R Markdown) containing code chunks & narrative.  
-             Then call `rmarkdown::render("analysis/metabolomics_report.Rmd", output_file = "metabolomics_report.html")`.  
-          8. Save all generated files to the repo and commit (branch `metabolomics-analysis-${{ github.run_id }}`).  
-
-        ##################  MCP (R) 設定  ##################
-        mcp_config: |
-          {
-            "mcpServers": {
-              "r": {
-                "type": "stdio",
-                "command": "Rscript",
-                "args": ["-e", "mcptools::mcp_server()"]
-              }
-            }
-          }
+          1. Create an R script that reads the CSV using `readr::read_csv()`
+          2. Perform basic exploratory analysis: dimensions, summary statistics
+          3. Compare normal vs 12h_fasting groups using t-tests
+          4. Create visualizations: PCA plot, heatmap of top differential metabolites
+          5. Save results and plots as files
+          6. Create a simple markdown report summarizing findings
+          
+          Use only the installed R packages: readr, dplyr, ggplot2, pheatmap, corrplot.
+          Write all code as R scripts and execute them using Bash commands like `Rscript script.R`.
 
         ##################  Claude が使えるツール ############
         allowed_tools: |
-          mcp__r__run_code,
-          Edit, Replace, FileCreate, View, Bash(git:*)
+          Bash, Edit, Write, Read
 
-        # ↑ Bash(git:*) は "git add/commit/push" だけ許可
 
         ##################  実行環境変数  ###################
         claude_env: |
           DATA_PATH=${{ github.event.inputs.data_path || 'fasting.csv' }}
 
     # 5) 生成レポートをアーティファクト保存 ----------------
-    - name: Upload HTML report
+    - name: Upload analysis results
       uses: actions/upload-artifact@v4
       with:
-        name: metabolomics-analysis-report
-        path: metabolomics_report.html
-        if-no-files-found: error
+        name: metabolomics-analysis-results
+        path: |
+          *.png
+          *.pdf
+          *.md
+          *.R
+        if-no-files-found: warn
