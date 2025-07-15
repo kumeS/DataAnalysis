@@ -1,0 +1,89 @@
+name: Claude · Metabolomics Analysis
+
+on:
+  workflow_dispatch:
+    inputs:
+      data_path:
+        description: "CSV relative path (e.g. fasting.csv)"
+        required: true
+        default: "fasting.csv"
+  push:
+    paths:
+      - 'data/**.csv'
+
+jobs:
+  analysis:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write          # Claude がコミットする場合に備える
+      issues: write
+      pull-requests: write
+
+    steps:
+    # 1) ソース取得 --------------------------------------------------------
+    - uses: actions/checkout@v4
+
+    # 2) R ランタイムを用意 ----------------------------------------------
+    - uses: r-lib/actions/setup-r@v2             # 公式アクション:contentReference[oaicite:5]{index=5}
+
+    # 3) R 用 MCP サーバー導入 -------------------------------------------
+    - name: Install mcptools & R packages for metabolomics
+      run: |
+        Rscript -e 'install.packages(c("pak","rmarkdown","tidyverse","skimr","ggplot2","pheatmap","VennDiagram","corrplot"), repos="https://cran.r-project.org")'
+        Rscript -e 'pak::pkg_install("posit-dev/mcptools")'
+
+    # 4) Claude Code を呼び出し ------------------------------------------
+    - name: Claude ➜ run full R analysis
+      id: claude
+      uses: anthropics/claude-code-base-action@beta
+      with:
+        anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+        ##################  Claude への指示  ##################
+        prompt: |
+          **Goal**: Perform a complete metabolomics analysis pipeline in R on the CSV at `${{ github.event.inputs.data_path || 'fasting.csv' }}`.  
+          **Steps**  
+          1. *Data ingestion*: read the CSV with `readr::read_csv()` and handle the metabolite data format.  
+          2. *Basic understanding*: output dimensions, column types, missing-value counts, and sample group information.  
+          3. *Data preprocessing*: log-transform metabolite values, handle missing values, and normalize data.  
+          4. *Descriptive stats*: produce `skimr::skim()` summary for each group (normal vs 12h_fasting).  
+          5. *Analysis*:  
+             - Compare metabolite levels between normal and 12h_fasting groups using t-tests
+             - Perform PCA analysis to visualize sample grouping
+             - Identify significantly different metabolites (p < 0.05)
+             - Create volcano plot and heatmap of top differential metabolites  
+          6. *Interpretation*: write concise insights about fasting-induced metabolic changes (max 500 words).  
+          7. *Report*: create `analysis/metabolomics_report.Rmd` (R Markdown) containing code chunks & narrative.  
+             Then call `rmarkdown::render("analysis/metabolomics_report.Rmd", output_file = "metabolomics_report.html")`.  
+          8. Save all generated files to the repo and commit (branch `metabolomics-analysis-${{ github.run_id }}`).  
+
+        ##################  MCP (R) 設定  ##################
+        mcp_config: |
+          {
+            "mcpServers": {
+              "r": {
+                "type": "stdio",
+                "command": "Rscript",
+                "args": ["-e", "mcptools::mcp_server()"]
+              }
+            }
+          }
+
+        ##################  Claude が使えるツール ############
+        allowed_tools: |
+          mcp__r__run_code,
+          Edit, Replace, FileCreate, View, Bash(git:*)
+
+        # ↑ Bash(git:*) は "git add/commit/push" だけ許可
+
+        ##################  実行環境変数  ###################
+        claude_env: |
+          DATA_PATH=${{ github.event.inputs.data_path || 'fasting.csv' }}
+
+    # 5) 生成レポートをアーティファクト保存 ----------------
+    - name: Upload HTML report
+      uses: actions/upload-artifact@v4
+      with:
+        name: metabolomics-analysis-report
+        path: metabolomics_report.html
+        if-no-files-found: error
