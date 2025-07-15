@@ -41,8 +41,8 @@ jobs:
         library(pheatmap)
         library(corrplot)
         
-        # Read data
-        data <- read_csv("${{ github.event.inputs.data_path || 'fasting.csv' }}")
+        # Read data (CSV with semicolon separator)
+        data <- read_csv2("${{ github.event.inputs.data_path || 'fasting.csv' }}")
         
         # Basic exploration
         cat("Data dimensions:", dim(data), "\n")
@@ -53,23 +53,41 @@ jobs:
         
         # PCA analysis
         numeric_data <- data %>% select_if(is.numeric)
-        pca_result <- prcomp(numeric_data, scale. = TRUE)
         
-        # PCA plot
-        png("pca_plot.png", width = 800, height = 600)
-        biplot(pca_result, main = "PCA Analysis")
-        dev.off()
-        
-        # Correlation matrix
-        cor_matrix <- cor(numeric_data, use = "complete.obs")
-        png("correlation_matrix.png", width = 800, height = 600)
-        corrplot(cor_matrix, method = "circle")
-        dev.off()
-        
-        # Heatmap
-        png("heatmap.png", width = 800, height = 600)
-        pheatmap(cor_matrix, main = "Metabolite Correlation Heatmap")
-        dev.off()
+        # Check if we have enough numeric data
+        if (ncol(numeric_data) > 1 && nrow(numeric_data) > 1) {
+          pca_result <- prcomp(numeric_data, scale. = TRUE)
+          
+          # PCA plot
+          png("pca_plot.png", width = 800, height = 600)
+          biplot(pca_result, main = "PCA Analysis")
+          dev.off()
+          
+          # Correlation matrix
+          cor_matrix <- cor(numeric_data, use = "complete.obs")
+          png("correlation_matrix.png", width = 800, height = 600)
+          corrplot(cor_matrix, method = "circle")
+          dev.off()
+          
+          # Heatmap (use correlation matrix for visualization)
+          png("heatmap.png", width = 800, height = 600)
+          pheatmap(cor_matrix, main = "Metabolite Correlation Heatmap")
+          dev.off()
+        } else {
+          cat("Warning: Not enough numeric data for analysis\n")
+          # Create empty plots as placeholders
+          png("pca_plot.png", width = 800, height = 600)
+          plot(1, type="n", main="PCA Analysis - Not enough data")
+          dev.off()
+          
+          png("correlation_matrix.png", width = 800, height = 600)
+          plot(1, type="n", main="Correlation Matrix - Not enough data")
+          dev.off()
+          
+          png("heatmap.png", width = 800, height = 600)
+          plot(1, type="n", main="Heatmap - Not enough data")
+          dev.off()
+        }
         
         # Create report
         cat("# Metabolomics Analysis Report\n\n", file = "analysis_report.md")
