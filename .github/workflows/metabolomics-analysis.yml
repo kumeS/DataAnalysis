@@ -18,6 +18,7 @@ jobs:
       contents: write          # Claude がコミットする場合に備える
       issues: write
       pull-requests: write
+      id-token: write          # OIDC token のため
 
     steps:
     # 1) ソース取得 --------------------------------------------------------
@@ -39,7 +40,7 @@ jobs:
         anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
 
         ##################  Claude への指示  ##################
-        prompt: |
+        direct_prompt: |
           **Goal**: Perform metabolomics analysis in R on the CSV at `${{ github.event.inputs.data_path || 'fasting.csv' }}`.  
           **Steps**  
           1. Create an R script that reads the CSV using `readr::read_csv()`

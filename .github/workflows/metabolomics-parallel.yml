@@ -24,6 +24,11 @@ jobs:
         task: [eda, modeling, viz]      # 3 つの軸
     runs-on: ubuntu-latest
     name: run-${{ matrix.task }}
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write          # OIDC token のため
 
     steps:
       - uses: actions/checkout@v4
@@ -44,7 +49,7 @@ jobs:
             Bash, Edit, Write, Read
 
           # task 固有プロンプト
-          prompt: |
+          direct_prompt: |
             You are the R analyst responsible for the **${{ matrix.task }}** stage on metabolomics data `${{ github.event.inputs.csv || 'fasting.csv' }}`.
             
             Create folder `artifacts/${{ matrix.task }}/` and produce:
