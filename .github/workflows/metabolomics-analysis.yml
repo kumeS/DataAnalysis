@@ -1,36 +1,16 @@
 name: Claude · Metabolomics Analysis
 
 on:
-  push:
-    paths:
-      - 'data/**.csv'
-  issues:
-    types: [opened, edited]
-  issue_comment:
-    types: [created, edited]
+  workflow_dispatch:
+    inputs:
+      data_path:
+        description: 'CSV file path'
+        required: true
+        default: 'fasting.csv'
 
 jobs:
   analysis:
     runs-on: ubuntu-latest
-    if: >-
-      (
-        github.event_name == 'push' ||
-        (
-          github.event_name == 'issues' && 
-          contains(github.event.issue.title, '統合') ||
-          contains(github.event.issue.title, '単一') ||
-          contains(github.event.issue.title, 'Metabolomics Analysis')
-        ) ||
-        (
-          github.event_name == 'issue_comment' && 
-          contains(github.event.comment.body, '@claude') &&
-          (
-            contains(github.event.issue.title, '統合') ||
-            contains(github.event.issue.title, '単一') ||
-            contains(github.event.issue.title, 'Metabolomics Analysis')
-          )
-        )
-      )
     permissions:
       contents: write          # Claude がコミットする場合に備える
       issues: write
@@ -49,35 +29,60 @@ jobs:
       run: |
         Rscript -e 'install.packages(c("readr","dplyr","ggplot2","pheatmap","corrplot"), repos="https://cran.r-project.org")'
 
-    # 4) Claude Code を呼び出し ------------------------------------------
-    - name: Claude ➜ run full R analysis
-      id: claude
-      uses: anthropics/claude-code-action@beta
-      with:
-        anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-
-        ##################  Claude への指示  ##################
-        direct_prompt: |
-          **Goal**: Perform metabolomics analysis in R on the CSV at `fasting.csv`.  
-          **Steps**  
-          1. Create an R script that reads the CSV using `readr::read_csv()`
-          2. Perform basic exploratory analysis: dimensions, summary statistics
-          3. Compare normal vs 12h_fasting groups using t-tests
-          4. Create visualizations: PCA plot, heatmap of top differential metabolites
-          5. Save results and plots as files
-          6. Create a simple markdown report summarizing findings
-          
-          Use only the installed R packages: readr, dplyr, ggplot2, pheatmap, corrplot.
-          Write all code as R scripts and execute them using Bash commands like `Rscript script.R`.
-
-        ##################  Claude が使えるツール ############
-        allowed_tools: |
-          Bash, Edit, Write, Read
-
-
-        ##################  実行環境変数  ###################
-        claude_env: |
-          DATA_PATH=fasting.csv
+    # 4) R解析スクリプトを直接実行 ------------------------------------------
+    - name: Run metabolomics analysis
+      run: |
+        # Create R analysis script
+        cat > metabolomics_analysis.R << 'EOF'
+        # Load required libraries
+        library(readr)
+        library(dplyr)
+        library(ggplot2)
+        library(pheatmap)
+        library(corrplot)
+        
+        # Read data
+        data <- read_csv("${{ github.event.inputs.data_path || 'fasting.csv' }}")
+        
+        # Basic exploration
+        cat("Data dimensions:", dim(data), "\n")
+        print(summary(data))
+        
+        # Save basic info
+        write.csv(summary(data), "summary_stats.csv")
+        
+        # PCA analysis
+        numeric_data <- data %>% select_if(is.numeric)
+        pca_result <- prcomp(numeric_data, scale. = TRUE)
+        
+        # PCA plot
+        png("pca_plot.png", width = 800, height = 600)
+        biplot(pca_result, main = "PCA Analysis")
+        dev.off()
+        
+        # Correlation matrix
+        cor_matrix <- cor(numeric_data, use = "complete.obs")
+        png("correlation_matrix.png", width = 800, height = 600)
+        corrplot(cor_matrix, method = "circle")
+        dev.off()
+        
+        # Heatmap
+        png("heatmap.png", width = 800, height = 600)
+        pheatmap(cor_matrix, main = "Metabolite Correlation Heatmap")
+        dev.off()
+        
+        # Create report
+        cat("# Metabolomics Analysis Report\n\n", file = "analysis_report.md")
+        cat("## Data Overview\n", file = "analysis_report.md", append = TRUE)
+        cat("- Dimensions:", dim(data)[1], "rows x", dim(data)[2], "columns\n\n", file = "analysis_report.md", append = TRUE)
+        cat("## Analysis Results\n", file = "analysis_report.md", append = TRUE)
+        cat("- PCA analysis completed\n", file = "analysis_report.md", append = TRUE)
+        cat("- Correlation matrix generated\n", file = "analysis_report.md", append = TRUE)
+        cat("- Heatmap visualization created\n", file = "analysis_report.md", append = TRUE)
+        EOF
+        
+        # Execute R script
+        Rscript metabolomics_analysis.R
 
     # 5) 生成レポートをアーティファクト保存 ----------------
     - name: Upload analysis results
