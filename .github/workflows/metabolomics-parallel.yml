@@ -38,7 +38,7 @@ jobs:
       # Claude Code 呼び出し ── task で prompt 切替
       - name: Claude ${{ matrix.task }}
         id: claude
-        uses: anthropics/claude-code-base-action@beta :contentReference[oaicite:2]{index=2}
+        uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           mcp_config: |
