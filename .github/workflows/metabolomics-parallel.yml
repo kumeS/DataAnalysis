@@ -2,14 +2,12 @@
 name: Claude · Parallel Metabolomics Analysis
 
 on:
-  workflow_dispatch:
-    inputs:
-      csv:
-        description: "CSV path (fasting.csv)"
-        required: true
-        default: "fasting.csv"
   push:
     paths: ["data/**.csv"]
+  issues:
+    types: [opened, edited]
+  issue_comment:
+    types: [created, edited]
 
 concurrency:             # 同じブランチで1つだけ動かす
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -50,7 +48,7 @@ jobs:
 
           # task 固有プロンプト
           direct_prompt: |
-            You are the R analyst responsible for the **${{ matrix.task }}** stage on metabolomics data `${{ github.event.inputs.csv || 'fasting.csv' }}`.
+            You are the R analyst responsible for the **${{ matrix.task }}** stage on metabolomics data `fasting.csv`.
             
             Create folder `artifacts/${{ matrix.task }}/` and produce:
             - eda: basic data exploration, summary statistics, correlation matrix, PCA plot
@@ -62,7 +60,7 @@ jobs:
             Save a short `note.md` describing your findings.
 
           claude_env: |
-            DATA=${{ github.event.inputs.csv || 'fasting.csv' }}
+            DATA=fasting.csv
             TASK=${{ matrix.task }}
 
       # 成果物をアップロード（ジョブごと）

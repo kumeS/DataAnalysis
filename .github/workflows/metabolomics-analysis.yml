@@ -1,15 +1,13 @@
 name: Claude · Metabolomics Analysis
 
 on:
-  workflow_dispatch:
-    inputs:
-      data_path:
-        description: "CSV relative path (e.g. fasting.csv)"
-        required: true
-        default: "fasting.csv"
   push:
     paths:
       - 'data/**.csv'
+  issues:
+    types: [opened, edited]
+  issue_comment:
+    types: [created, edited]
 
 jobs:
   analysis:
@@ -41,7 +39,7 @@ jobs:
 
         ##################  Claude への指示  ##################
         direct_prompt: |
-          **Goal**: Perform metabolomics analysis in R on the CSV at `${{ github.event.inputs.data_path || 'fasting.csv' }}`.  
+          **Goal**: Perform metabolomics analysis in R on the CSV at `fasting.csv`.  
           **Steps**  
           1. Create an R script that reads the CSV using `readr::read_csv()`
           2. Perform basic exploratory analysis: dimensions, summary statistics
@@ -60,7 +58,7 @@ jobs:
 
         ##################  実行環境変数  ###################
         claude_env: |
-          DATA_PATH=${{ github.event.inputs.data_path || 'fasting.csv' }}
+          DATA_PATH=fasting.csv
 
     # 5) 生成レポートをアーティファクト保存 ----------------
     - name: Upload analysis results
