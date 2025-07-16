@@ -1,0 +1,283 @@
+"","variable","p_value"
+"1","gamma-Glu-Cys",NA
+"2","gamma-Glu-2-aminobutyric acid",NA
+"3","gamma-Butyrobetaine",NA
+"4","beta-Ala",NA
+"5","Xanthosine",NA
+"6","Xanthopterin",NA
+"7","Xanthine",NA
+"8","Val",NA
+"9","UTP",NA
+"10","Urocanic acid",NA
+"11","Uridine",NA
+"12","Uric acid",NA
+"13","Urea",NA
+"14","Uracil",NA
+"15","UMP",NA
+"16","UDP-N-acetylglucosamine",NA
+"17","UDP-glucuronic acid",NA
+"18","UDP-glucose ; UDP-galactose",NA
+"19","UDP",NA
+"20","Tyr-Glu",NA
+"21","Tyramine",NA
+"22","Tyr",NA
+"23","Trp",NA
+"24","Trimethylamine N-oxide",NA
+"25","Trigonelline",NA
+"26","Triethanolamine",NA
+"27","Trehalose 6-phosphate",NA
+"28","trans-Glutaconic acid ; Itaconic acid",NA
+"29","threo-beta-Methylaspartic acid",NA
+"30","Threonic acid",NA
+"31","Thr-Asp",NA
+"32","Thr",NA
+"33","Thiaproline",NA
+"34","Thiamine phosphate",NA
+"35","Thiamine",NA
+"36","Theobromine",NA
+"37","Taurocholic acid",NA
+"38","Taurine",NA
+"39","Succinic acid",NA
+"40","Suberic acid",NA
+"41","Stachydrine",NA
+"42","Spermine",NA
+"43","Spermidine",NA
+"44","Sorbitol 6-phosphate",NA
+"45","S-Nitrosoglutathione",NA
+"46","S-Methylmethionine",NA
+"47","S-Lactoylglutathione",NA
+"48","Serotonin",NA
+"49","Ser-Glu",NA
+"50","Ser",NA
+"51","Sedoheptulose 7-phosphate",NA
+"52","SDMA",NA
+"53","Sarcosine",NA
+"54","S-Adenosylmethionine",NA
+"55","S-Adenosylhomocysteine",NA
+"56","Saccharopine",NA
+"57","Ribulose 5-phosphate",NA
+"58","Ribulose 1,5-diphosphate",NA
+"59","Ribose 5-phosphate",NA
+"60","Rhein",NA
+"61","Quinolinic acid",NA
+"62","Pyruvic acid",NA
+"63","Pyridoxamine 5'-phosphate",NA
+"64","Pyridoxal",NA
+"65","Pyridine-2-carboxylic acid butyl ester",NA
+"66","Putrescine",NA
+"67","Pterin",NA
+"68","Propionyl CoA_divalent",NA
+"69","Propionic acid",NA
+"70","Pro",NA
+"71","p-Nitrophenyl phosphate",NA
+"72","Pipecolic acid",NA
+"73","Pimelic acid",NA
+"74","Phosphorylcholine",NA
+"75","Phosphoenolpyruvic acid",NA
+"76","Phosphocreatine",NA
+"77","Phenaceturic acid",NA
+"78","Phe",NA
+"79","Pelargonic acid",NA
+"80","Pantothenic acid",NA
+"81","Oxypurinol",NA
+"82","O-Succinylhomoserine",NA
+"83","Ornithine",NA
+"84","Ophthalmic acid",NA
+"85","Octanoyl CoA_divalent",NA
+"86","O-Acetylcarnitine",NA
+"87","omega-N-Methylarginine",NA
+"88","N-Methylproline",NA
+"89","N-Methylglutamic acid",NA
+"90","N-Methylalanine",NA
+"91","Nicotinic acid",NA
+"92","N-Ethylmaleimide_+H2O",NA
+"93","N-Carbamoylaspartic acid",NA
+"94","NADPH_divalent",NA
+"95","NADP+",NA
+"96","NADH",NA
+"97","NAD+",NA
+"98","N-Acetyl-beta-alanine",NA
+"99","N-Acetylphenylalanine",NA
+"100","N-Acetylornithine",NA
+"101","N-Acetylneuraminic acid",NA
+"102","N-Acetylmethionine",NA
+"103","N-Acetylleucine",NA
+"104","N-Acetylhistidine",NA
+"105","N-Acetylglutamic acid",NA
+"106","N-Acetylglucosamine 6-phosphate",NA
+"107","N-Acetylglucosamine 1-phosphate",NA
+"108","N-Acetylglucosamine",NA
+"109","N-Acetylaspartic acid",NA
+"110","N8-Acetylspermidine",NA
+"111","N6-Acetyllysine",NA
+"112","N6,N6,N6-Trimethyllysine",NA
+"113","N5-Ethylglutamine",NA
+"114","N1-Acetylspermidine",NA
+"115","N,N-Dimethylglycine",NA
+"116","myo-Inositol 2-phosphate",NA
+"117","Mucic acid",NA
+"118","Methionine sulfoxide",NA
+"119","Met",NA
+"120","Malic acid",NA
+"121","Lys",NA
+"122","Leu",NA
+"123","Lauric acid",NA
+"124","Lactic acid",NA
+"125","Kynurenine",NA
+"126","Isovaleric acid",NA
+"127","Isopropanolamine",NA
+"128","Isonicotinamide ; Nicotinamide",NA
+"129","Isocitric acid",NA
+"130","Isobutyryl CoA_divalent",NA
+"131","Isobutyric acid ; Butyric acid",NA
+"132","Isobutylamine",NA
+"133","Isethionic acid",NA
+"134","Inosine",NA
+"135","IMP",NA
+"136","Imidazolelactic acid",NA
+"137","Imidazole-4-acetic acid",NA
+"138","Ile",NA
+"139","Hypoxanthine",NA
+"140","Hypotaurine",NA
+"141","Hydroxyproline",NA
+"142","Homovanillic acid",NA
+"143","Homoserine",NA
+"144","Histamine",NA
+"145","His",NA
+"146","Hexylamine",NA
+"147","Hexanoic acid",NA
+"148","Heptanoic acid",NA
+"149","Guanosine",NA
+"150","Guanidoacetic acid",NA
+"151","Guanidinosuccinic acid",NA
+"152","GTP",NA
+"153","GMP",NA
+"154","Gly-Leu",NA
+"155","Gly-Gly",NA
+"156","Glycolic acid",NA
+"157","Glycocholic acid",NA
+"158","Glycerophosphocholine",NA
+"159","Glycerol 3-phosphate",NA
+"160","Glyceric acid",NA
+"161","Glyceraldehyde 3-phosphate",NA
+"162","Gly-Asp",NA
+"163","Gly",NA
+"164","Glutathione (GSSG)_divalent",NA
+"165","Glutathione (GSH)",NA
+"166","Glutaric acid",NA
+"167","Glucuronic acid",NA
+"168","Glucose 6-phosphate",NA
+"169","Glucose 1-phosphate",NA
+"170","Glucosamine",NA
+"171","Gluconic acid",NA
+"172","Glucaric acid",NA
+"173","Glu",NA
+"174","Gln",NA
+"175","GDP-mannose ; GDP-galactose",NA
+"176","GDP",NA
+"177","Ganciclovir",NA
+"178","GABA",NA
+"179","Fumaric acid",NA
+"180","Fructose 6-phosphate",NA
+"181","Fructose 1,6-diphosphate",NA
+"182","FAD_divalent",NA
+"183","Ethanolamine phosphate",NA
+"184","Ergothioneine",NA
+"185","Ectoine",NA
+"186","Dyphylline",NA
+"187","dTTP",NA
+"188","Dihydroxyacetone phosphate",NA
+"189","Diethanolamine",NA
+"190","Cytosine",NA
+"191","Cytidine",NA
+"192","Cysteinesulfinic acid",NA
+"193","Cysteine glutathione disulphide",NA
+"194","Cysteic acid",NA
+"195","Cystathionine",NA
+"196","Cys",NA
+"197","Cyclohexylamine",NA
+"198","Creatinine",NA
+"199","Creatine",NA
+"200","CoA_divalent",NA
+"201","CMP-N-acetylneuraminate",NA
+"202","CMP",NA
+"203","Citrulline",NA
+"204","Citric acid",NA
+"205","cis-Aconitic acid",NA
+"206","Choline",NA
+"207","Cholic acid",NA
+"208","CDP-choline",NA
+"209","CDP",NA
+"210","Carnosine",NA
+"211","Carnitine",NA
+"212","Carboxymethyllysine",NA
+"213","Betonicine",NA
+"214","Betaine aldehyde_+H2O",NA
+"215","Betaine",NA
+"216","Benzoic acid",NA
+"217","ATP",NA
+"218","Asp",NA
+"219","Asn",NA
+"220","Ascorbic acid",NA
+"221","Argininosuccinic acid",NA
+"222","Arg-Glu",NA
+"223","Arg",NA
+"224","Anthranilic acid",NA
+"225","AMP",NA
+"226","Ala-Ala",NA
+"227","Ala",NA
+"228","ADP-ribose",NA
+"229","ADP-glucose ; GDP-fucose",NA
+"230","ADP",NA
+"231","ADMA",NA
+"232","Adipic acid",NA
+"233","Adenylosuccinic acid",NA
+"234","Adenosine",NA
+"235","Adenine",NA
+"236","Acetyl CoA_divalent",NA
+"237","Acetoacetamide",NA
+"238","7,8-Dihydrobiopterin",NA
+"239","6-Phosphogluconic acid",NA
+"240","6-Hydroxyhexanoic acid",NA
+"241","6-Aminohexanoic acid",NA
+"242","5-Oxoproline",NA
+"243","5-Oxohexanoic acid",NA
+"244","5-Oxo-2-tetrahydrofurancarboxylic acid",NA
+"245","5-Methyltetrahydrofolic acid",NA
+"246","5-Methoxyindoleacetic acid",NA
+"247","5'-Deoxy-5'-methylthioadenosine",NA
+"248","5-Aminovaleric acid",NA
+"249","5-Aminoimidazole-4-carboxamide ribotide",NA
+"250","5,6,7,8-Tetrahydrobiopterin",NA
+"251","4-Guanidinobutyric acid",NA
+"252","4-Amino-3-hydroxybutyric acid",NA
+"253","3-Ureidopropionic acid",NA
+"254","3-Phosphoglyceric acid",NA
+"255","3-Indoxylsulfuric acid",NA
+"256","3-Hydroxybutyric acid",NA
+"257","3-Hydroxy-3-methylglutaric acid",NA
+"258","3'-Dephospho CoA",NA
+"259","3-Aminoisobutyric acid",NA
+"260","3-Aminobutyric acid",NA
+"261","3',5'-ADP",NA
+"262","2-Phosphoglyceric acid",NA
+"263","2-Methylserine",NA
+"264","2-Hydroxyvaleric acid",NA
+"265","2-Hydroxyisobutyric acid",NA
+"266","2-Hydroxybutyric acid",NA
+"267","2-Hydroxy-4-methylvaleric acid",NA
+"268","2-Deoxyglucose 6-phosphate",NA
+"269","2-Aminobutyric acid",NA
+"270","2-Aminoadipic acid",NA
+"271","2,6-Diaminopimelic acid",NA
+"272","2,4-Diaminobutyric acid",NA
+"273","2,3-Diphosphoglyceric acid",NA
+"274","2,3-Diaminopropionic acid",NA
+"275","1-Pyrroline 5-carboxylic acid",NA
+"276","1-Methylnicotinamide",NA
+"277","1-Methylhistidine ; 3-Methylhistidine",NA
+"278","1-Methylhistamine",NA
+"279","1-Methyladenosine",NA
+"280","1-Methyl-4-imidazoleacetic acid",NA
+"281","1-Methyl-2-pyrrolidone",NA
+"282","1H-Imidazole-4-propionic acid",NA
