@@ -1,0 +1,70 @@
+# GitHub Pages Configuration
+title: "Data Analysis Results"
+description: "Comprehensive metabolomics analysis results and interpretations"
+baseurl: "/DataAnalysis"
+url: "https://sas.github.io"
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+theme: minima
+
+# Plugin settings
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+# Exclude files from processing
+exclude:
+  - .github/
+  - .gitignore
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+
+# Include directories
+include:
+  - results/
+
+# Collections for organizing results
+collections:
+  analyses:
+    output: true
+    permalink: /:collection/:name/
+
+# Default settings
+defaults:
+  - scope:
+      path: "results"
+    values:
+      layout: "default"
+  - scope:
+      path: "results/metabolomics-analysis"
+    values:
+      layout: "analysis"
+  - scope:
+      path: "results/parallel-metabolomics-analysis"  
+    values:
+      layout: "analysis"
+
+# GitHub Pages specific settings
+github:
+  repository_name: "DataAnalysis"
+  owner_name: "sas"
+
+# SEO settings
+author: "Claude AI"
+twitter:
+  username: 
+facebook:
+  app_id: 
+  publisher: 
+
+# Analytics (optional)
+google_analytics: 
+
+# Social media
+social:
+  name: "Data Analysis Project"
+  links:
+    - "https://github.com/sas/DataAnalysis"
