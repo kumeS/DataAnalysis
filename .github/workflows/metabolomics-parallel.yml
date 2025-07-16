@@ -165,9 +165,8 @@ jobs:
           mkdir -p results/parallel-metabolomics-analysis/$(date +%Y%m%d_%H%M%S)
           RESULT_DIR="results/parallel-metabolomics-analysis/$(date +%Y%m%d_%H%M%S)"
           
-          # Copy final report and interpretation
+          # Copy final report
           cp FINAL_REPORT.md "$RESULT_DIR/"
-          cp claude_parallel_interpretation.md "$RESULT_DIR/"
           
           # Copy all task outputs
           cp -r _merge/* "$RESULT_DIR/" 2>/dev/null || echo "No merge outputs to copy"
@@ -225,4 +224,3 @@ jobs:
           path: |
             results/
             FINAL_REPORT.md
-            claude_parallel_interpretation.md

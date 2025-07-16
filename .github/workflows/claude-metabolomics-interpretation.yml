@@ -45,32 +45,65 @@ jobs:
             - Key findings from the metabolomics analysis
             - Overview of metabolic patterns identified
             
-            ## 2. Statistical Interpretation
-            - PCA results and variance explanation
-            - Correlation patterns and significance
-            - Data quality assessment
+            ## 2. Statistical Analysis & Group Comparisons
+            - **Variance Analysis**: Assess within-group and between-group variance patterns
+            - **Distribution Analysis**: Examine metabolite concentration distributions and normality
+            - **PCA Results**: Variance explanation with statistical significance testing
+            - **Correlation Patterns**: Statistical significance and effect sizes
+            - **Group Comparisons**: Identify significant differences between conditions
+            - **Multiple Testing Corrections**: Adjust for multiple comparisons
+            - **Effect Size Assessment**: Quantify magnitude of observed differences
+            - **Data Quality Assessment**: Missing data patterns and outlier analysis
             
-            ## 3. Biological Significance
-            - Metabolic pathway implications
+            ## 3. Discussion & Critical Considerations
+            - **Biological Plausibility**: Are findings consistent with known metabolic physiology?
+            - **Clinical Relevance**: How do statistical findings translate to practical significance?
+            - **Methodological Limitations**: What are the constraints of the analytical approach?
+            - **Confounding Factors**: What variables might influence the observed patterns?
+            - **Reproducibility Considerations**: How likely are findings to replicate?
+            - **Sample Representativeness**: Do results generalize beyond the current dataset?
+            - **Statistical Assumptions**: Are the assumptions of applied methods met?
+            
+            ## 4. Biological Significance
+            - Metabolic pathway implications with pathway enrichment analysis
             - Fasting state metabolic profile insights
-            - Potential biomarkers identified
+            - Potential biomarkers identified with validation requirements
+            - **Metabolic Network Analysis**: Interconnections between metabolites
+            - **Pathway Context**: How findings fit into known metabolic networks
             
-            ## 4. Clinical Relevance
-            - Health implications of findings
-            - Diagnostic potential
-            - Therapeutic insights
+            ## 5. Clinical Relevance
+            - Health implications of findings with confidence intervals
+            - Diagnostic potential with performance metrics
+            - Therapeutic insights and intervention targets
+            - **Biomarker Performance**: Sensitivity, specificity, and predictive values
+            - **Clinical Translation Requirements**: Steps needed for clinical application
             
-            ## 5. Technical Assessment
-            - Data processing quality
-            - Statistical validity
+            ## 6. Technical Assessment
+            - Data processing quality and validation
+            - Statistical validity and assumption checking
             - Methodological strengths/limitations
+            - **Power Analysis**: Adequacy of sample size for detected effects
+            - **Sensitivity Analysis**: Robustness to analytical choices
             
-            ## 6. Recommendations
-            - Immediate next steps
-            - Future research directions
+            ## 7. Recommendations
+            - Immediate next steps with statistical priorities
+            - Future research directions including power calculations
             - Additional analyses suggested
+            - **Validation Study Design**: Recommendations for confirming findings
+            - **Sample Size Requirements**: For follow-up studies
             
-            Focus on the actual data patterns in the generated files. Create a new file called 
-            'claude_interpretation.md' in the same results directory with your comprehensive analysis.
+            Focus on the actual data patterns in the generated files. Create both:
+            1. A comprehensive markdown file called 'claude_interpretation.md'
+            2. An HTML report called 'claude_interpretation.html' formatted for GitHub Pages viewing
             
-            After creating the interpretation, commit it to the repository with an appropriate commit message.
+            The HTML report should include:
+            - Professional styling with CSS
+            - Interactive elements where appropriate
+            - Proper formatting for web viewing
+            - Embedded images and visualizations
+            - Table of contents with navigation
+            - Responsive design for different screen sizes
+            
+            Save both files in the same results directory with your comprehensive analysis.
+            
+            After creating the interpretation files, commit them to the repository with an appropriate commit message.

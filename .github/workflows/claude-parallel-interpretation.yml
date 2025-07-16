@@ -55,34 +55,73 @@ jobs:
             - **Modeling Results**: Statistical findings and significance
             - **Visualization Insights**: Pattern recognition from visual analysis
             
-            ## 3. Integrated Biological Interpretation
+            ## 3. Statistical Analysis & Group Comparisons
+            - **Variance Analysis**: Assess within-group and between-group variance patterns
+            - **Distribution Analysis**: Examine metabolite concentration distributions and normality
+            - **Group Comparisons**: Identify significant differences between metabolic states/conditions
+            - **Effect Size Assessment**: Quantify magnitude of observed differences
+            - **Statistical Power**: Evaluate adequacy of sample sizes for detected effects
+            - **Multiple Testing Corrections**: Account for multiple comparisons in metabolite analysis
+            
+            ## 4. Integrated Biological Interpretation
             - Metabolic pathway implications from combined analysis
             - Fasting state metabolic profile insights
             - Cross-component validation of findings
             - Potential biomarkers identified through multiple approaches
+            - **Metabolic Network Analysis**: Interconnections between identified metabolites
+            - **Pathway Enrichment**: Overrepresentation of specific metabolic pathways
             
-            ## 4. Statistical Validation
+            ## 5. Statistical Validation & Robustness
             - Cross-validation between analysis components
-            - Statistical significance assessment
+            - Statistical significance assessment with confidence intervals
             - Data quality evaluation across all components
+            - **Sensitivity Analysis**: Robustness of findings to analytical choices
+            - **Bootstrap Analysis**: Stability of statistical estimates
+            - **Outlier Impact Assessment**: Effect of extreme values on conclusions
             
-            ## 5. Clinical and Research Implications
-            - Health implications of integrated findings
-            - Diagnostic potential of identified patterns
+            ## 6. Discussion & Critical Considerations
+            - **Biological Plausibility**: Are findings consistent with known metabolic physiology?
+            - **Clinical Relevance**: How do statistical findings translate to practical significance?
+            - **Methodological Limitations**: What are the constraints of the analytical approach?
+            - **Confounding Factors**: What variables might influence the observed patterns?
+            - **Reproducibility Considerations**: How likely are findings to replicate?
+            - **Sample Representativeness**: Do results generalize beyond the current dataset?
+            
+            ## 7. Clinical and Research Implications
+            - Health implications of integrated findings with statistical context
+            - Diagnostic potential of identified patterns with performance metrics
             - Research applications and future directions
+            - **Biomarker Validation Requirements**: Steps needed for clinical translation
+            - **Therapeutic Target Assessment**: Potential intervention points identified
             
-            ## 6. Methodological Assessment
+            ## 8. Methodological Assessment
             - Benefits of parallel analysis approach
             - Computational efficiency gains
             - Analytical robustness and validation
+            - **Statistical Method Appropriateness**: Suitability of chosen analytical techniques
+            - **Data Quality Impact**: How data characteristics affect interpretation
             
-            ## 7. Actionable Recommendations
-            - Immediate steps for result utilization
-            - Future analysis suggestions
+            ## 9. Actionable Recommendations
+            - Immediate steps for result utilization with statistical priorities
+            - Future analysis suggestions including power calculations
             - Data integration opportunities
+            - **Validation Study Design**: Recommendations for confirming findings
+            - **Sample Size Considerations**: Requirements for follow-up studies
             
             Focus on integrating insights from all three parallel components and highlight the advantages 
-            of the multi-component approach. Create a new file called 'claude_parallel_interpretation.md' 
-            in the same results directory with your comprehensive analysis.
+            of the multi-component approach. Create both:
+            1. A comprehensive markdown file called 'claude_parallel_interpretation.md'
+            2. An HTML report called 'claude_parallel_interpretation.html' formatted for GitHub Pages viewing
             
-            After creating the interpretation, commit it to the repository with an appropriate commit message.
+            The HTML report should include:
+            - Professional styling with CSS
+            - Interactive elements where appropriate
+            - Proper formatting for web viewing
+            - Embedded images and visualizations
+            - Table of contents with navigation
+            - Responsive design for different screen sizes
+            - Integration dashboard showing results from all three components
+            
+            Save both files in the same results directory with your comprehensive analysis.
+            
+            After creating the interpretation files, commit them to the repository with an appropriate commit message.
