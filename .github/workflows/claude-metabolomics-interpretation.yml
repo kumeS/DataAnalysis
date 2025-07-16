@@ -9,7 +9,7 @@ on:
 
 jobs:
   claude-interpretation:
-    if: contains(github.event.head_commit.message, 'Metabolomics Analysis workflow') || contains(github.event.head_commit.message, 'metabolomics analysis results')
+    if: contains(github.event.head_commit.message, 'Claude: Metabolomics Analysis workflow') || contains(github.event.head_commit.message, 'Metabolomics Analysis workflow') || contains(github.event.head_commit.message, 'metabolomics analysis results')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -129,7 +129,7 @@ jobs:
           
           **Analysis Completed:** $(TZ=Asia/Tokyo date)
           **Data Source:** fasting.csv
-          **Workflow:** Claude · Metabolomics Analysis
+          **Workflow:** Claude: Metabolomics Analysis
           
           ### 🔍 Analysis Overview
           A comprehensive metabolomics analysis has been completed with Claude AI interpretation. The analysis includes statistical evaluation, PCA, correlation analysis, and biological interpretation.
