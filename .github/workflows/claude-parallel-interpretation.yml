@@ -145,7 +145,7 @@ jobs:
           cat > issue_body.md << 'EOF'
           ## 🔬 Parallel Metabolomics Analysis Results
           
-          **Analysis Completed:** $(date)
+          **Analysis Completed:** $(TZ=Asia/Tokyo date)
           **Data Source:** fasting.csv
           **Workflow:** Claude · Parallel Metabolomics Analysis
           **Analysis Strategy:** Multi-component parallel processing

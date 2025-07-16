@@ -127,7 +127,7 @@ jobs:
           cat > issue_body.md << 'EOF'
           ## 📊 Metabolomics Analysis Results
           
-          **Analysis Completed:** $(date)
+          **Analysis Completed:** $(TZ=Asia/Tokyo date)
           **Data Source:** fasting.csv
           **Workflow:** Claude · Metabolomics Analysis
           
