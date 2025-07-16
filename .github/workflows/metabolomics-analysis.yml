@@ -1,4 +1,4 @@
-name: Claude: Metabolomics Analysis
+name: "Claude: Metabolomics Analysis"
 
 on:
   workflow_dispatch:
