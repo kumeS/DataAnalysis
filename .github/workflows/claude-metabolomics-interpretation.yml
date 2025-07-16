@@ -1,15 +1,15 @@
 name: Claude Metabolomics Interpretation
 
 on:
-  push:
-    paths:
-      - 'results/metabolomics-analysis/**'
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      results_path:
+        description: 'Results directory path'
+        required: true
+        default: 'results/metabolomics-analysis'
 
 jobs:
   claude-interpretation:
-    if: contains(github.event.head_commit.message, 'Claude: Metabolomics Analysis workflow') || contains(github.event.head_commit.message, 'Metabolomics Analysis workflow') || contains(github.event.head_commit.message, 'metabolomics analysis results')
     runs-on: ubuntu-latest
     permissions:
       contents: write

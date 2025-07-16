@@ -1,15 +1,15 @@
 name: Claude Parallel Metabolomics Interpretation
 
 on:
-  push:
-    paths:
-      - 'results/parallel-metabolomics-analysis/**'
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      results_path:
+        description: 'Results directory path'
+        required: true
+        default: 'results/parallel-metabolomics-analysis'
 
 jobs:
   claude-parallel-interpretation:
-    if: contains(github.event.head_commit.message, 'Claude: Parallel Metabolomics Analysis workflow') || contains(github.event.head_commit.message, 'Parallel Metabolomics Analysis workflow') || contains(github.event.head_commit.message, 'parallel metabolomics analysis results')
     runs-on: ubuntu-latest
     permissions:
       contents: write
