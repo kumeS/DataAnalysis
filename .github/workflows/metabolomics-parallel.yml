@@ -158,112 +158,6 @@ jobs:
             fi
           done
 
-      # Claude Code Action 真のAI解釈
-      - name: Prepare parallel analysis files for Claude interpretation
-        run: |
-          # Create a comprehensive prompt file for Claude parallel analysis
-          cat > claude_parallel_prompt.md << 'EOF'
-          # Parallel Metabolomics Analysis Interpretation Request
-
-          Please analyze the parallel metabolomics analysis results and provide comprehensive scientific interpretation.
-
-          ## Context
-          - **Data source**: ${{ github.event.inputs.data_path || 'fasting.csv' }}
-          - **Analysis type**: Parallel metabolomics analysis with EDA, Modeling, and Visualization
-          - **Sample type**: Fasting metabolomics data
-          - **Approach**: Multi-component parallel analysis for comprehensive insights
-
-          ## Parallel Analysis Components
-          This analysis was performed using three parallel components:
-          1. **EDA (Exploratory Data Analysis)**: PCA, correlation analysis, basic statistics
-          2. **Modeling**: Statistical modeling and hypothesis testing  
-          3. **Visualization**: Advanced data visualization and heatmaps
-
-          ## Analysis Files Generated
-          Please examine these analysis outputs from each component:
-
-          ### Final Integrated Report
-          - `FINAL_REPORT.md` - Consolidated report from all parallel components
-
-          ### Component-Specific Outputs
-          - `_merge/eda-outputs/` - EDA analysis results and visualizations
-          - `_merge/modeling-outputs/` - Statistical modeling results
-          - `_merge/viz-outputs/` - Visualization analysis outputs
-
-          ## Interpretation Request
-
-          Please provide a comprehensive scientific interpretation covering:
-
-          ### 1. Executive Summary
-          - Overview of parallel analysis approach
-          - Key findings across all analysis components
-          - Integration of insights from EDA, modeling, and visualization
-
-          ### 2. Component-Specific Analysis
-          - **EDA Insights**: Patterns discovered through exploratory analysis
-          - **Modeling Results**: Statistical findings and significance
-          - **Visualization Insights**: Pattern recognition from visual analysis
-
-          ### 3. Integrated Biological Interpretation
-          - Metabolic pathway implications from combined analysis
-          - Fasting state metabolic profile insights
-          - Cross-component validation of findings
-          - Potential biomarkers identified through multiple approaches
-
-          ### 4. Statistical Validation
-          - Cross-validation between analysis components
-          - Statistical significance assessment
-          - Data quality evaluation across all components
-
-          ### 5. Clinical and Research Implications
-          - Health implications of integrated findings
-          - Diagnostic potential of identified patterns
-          - Research applications and future directions
-
-          ### 6. Methodological Assessment
-          - Benefits of parallel analysis approach
-          - Computational efficiency gains
-          - Analytical robustness and validation
-
-          ### 7. Actionable Recommendations
-          - Immediate steps for result utilization
-          - Future analysis suggestions
-          - Data integration opportunities
-
-          Please base your interpretation on the actual parallel analysis results and emphasize the advantages of the multi-component approach.
-          EOF
-
-      - name: Generate Claude AI Interpretation for Parallel Analysis
-        uses: anthropics/claude-code-action@beta
-        with:
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          direct_prompt: |
-            Please analyze the parallel metabolomics analysis results and provide comprehensive interpretation.
-            
-            This analysis used three parallel components:
-            1. EDA (Exploratory Data Analysis) - PCA, correlation analysis, statistics
-            2. Modeling - Statistical modeling and hypothesis testing
-            3. Visualization - Advanced data visualization and heatmaps
-            
-            Please examine these files:
-            - FINAL_REPORT.md (integrated report from all components)
-            - _merge/eda-outputs/ (exploratory analysis results)
-            - _merge/modeling-outputs/ (statistical modeling results) 
-            - _merge/viz-outputs/ (visualization analysis outputs)
-            
-            Provide comprehensive interpretation covering:
-            
-            1. **Executive Summary**: Overview of parallel approach and key findings
-            2. **Component Analysis**: Insights from EDA, modeling, and visualization
-            3. **Integrated Biological Interpretation**: Combined metabolic insights and biomarkers
-            4. **Statistical Validation**: Cross-component validation and significance
-            5. **Clinical Applications**: Health implications and research directions
-            6. **Methodological Assessment**: Benefits of parallel approach
-            7. **Recommendations**: Next steps and future analysis suggestions
-            
-            Focus on integrating insights from all three components and highlight the advantages 
-            of the parallel analysis approach. Create 'claude_parallel_interpretation.md' with 
-            your comprehensive analysis.
 
       # 結果をリポジトリに保存
       - name: Create results directory and save outputs
@@ -310,6 +204,13 @@ jobs:
             Generated by Claude · Parallel Metabolomics Analysis workflow
             Data source: ${{ github.event.inputs.data_path || 'fasting.csv' }}
             Analysis components: EDA, Modeling, Visualization
+            
+            Parallel analysis includes:
+            - Multi-component statistical analysis
+            - Cross-validated results and visualizations
+            - Integrated final report
+            
+            Claude AI interpretation will be triggered automatically.
             
             🤖 Generated with Claude Code integration
             
