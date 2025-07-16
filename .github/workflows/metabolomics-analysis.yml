@@ -55,14 +55,42 @@ jobs:
         library(pheatmap)
         library(corrplot)
         
-        # Read data (CSV with comma separator)
+        # Read data (CSV with semicolon separator and first column as row names)
         tryCatch({
-          data <- read_csv("${{ github.event.inputs.data_path || 'fasting.csv' }}")
-          cat("Data loaded successfully\n")
+          # First try with semicolon separator and first column as row names
+          data <- read_csv("${{ github.event.inputs.data_path || 'fasting.csv' }}", 
+                          col_names = TRUE, 
+                          locale = locale(encoding = "UTF-8"))
+          
+          # Check if data loaded properly
+          if (ncol(data) == 1) {
+            cat("Trying semicolon separator...\n")
+            data <- read_delim("${{ github.event.inputs.data_path || 'fasting.csv' }}", 
+                              delim = ";", 
+                              col_names = TRUE,
+                              locale = locale(encoding = "UTF-8"))
+          }
+          
+          # If first column is empty strings or row identifiers, use it as row names
+          if (ncol(data) > 1 && (all(data[[1]] == "" | is.na(data[[1]])) || 
+                                is.character(data[[1]]) && !any(is.na(as.numeric(data[[1]], na.rm = TRUE))) == FALSE)) {
+            rownames(data) <- data[[1]]
+            data <- data[, -1]  # Remove first column
+          }
+          
+          cat("Data loaded successfully with", nrow(data), "rows and", ncol(data), "columns\n")
         }, error = function(e) {
           cat("Error reading CSV file:", e$message, "\n")
-          cat("Trying different separator...\n")
-          data <<- read_csv2("${{ github.event.inputs.data_path || 'fasting.csv' }}")
+          cat("Trying alternative reading method...\n")
+          
+          # Fallback: try read.csv with semicolon separator
+          data <<- read.csv("${{ github.event.inputs.data_path || 'fasting.csv' }}", 
+                           sep = ";", 
+                           header = TRUE, 
+                           row.names = 1,
+                           stringsAsFactors = FALSE,
+                           check.names = FALSE)
+          cat("Data loaded with fallback method:", nrow(data), "rows and", ncol(data), "columns\n")
         })
         
         # Basic exploration
@@ -73,27 +101,80 @@ jobs:
         write.csv(summary(data), "summary_stats.csv")
         
         # PCA analysis
-        numeric_data <- data %>% select_if(is.numeric)
+        # Convert character columns to numeric where possible
+        data_numeric <- data %>% 
+          mutate_all(~ {
+            if (is.character(.)) {
+              as.numeric(gsub(",", ".", .))  # Convert comma decimal separator to dot
+            } else {
+              .
+            }
+          })
+        
+        numeric_data <- data_numeric %>% select_if(is.numeric)
+        
+        # Remove columns with all NA values
+        numeric_data <- numeric_data[, colSums(is.na(numeric_data)) < nrow(numeric_data)]
+        
+        cat("Numeric data dimensions:", dim(numeric_data), "\n")
         
         # Check if we have enough numeric data
         if (ncol(numeric_data) > 1 && nrow(numeric_data) > 1) {
-          pca_result <- prcomp(numeric_data, scale. = TRUE)
+          # Remove rows with too many missing values (more than 50% missing)
+          numeric_data_clean <- numeric_data[rowSums(is.na(numeric_data)) < ncol(numeric_data) * 0.5, ]
           
-          # PCA plot
-          png("pca_plot.png", width = 800, height = 600)
-          biplot(pca_result, main = "PCA Analysis")
-          dev.off()
+          # Remove columns with too many missing values (more than 80% missing)
+          numeric_data_clean <- numeric_data_clean[, colSums(is.na(numeric_data_clean)) < nrow(numeric_data_clean) * 0.8]
           
-          # Correlation matrix
-          cor_matrix <- cor(numeric_data, use = "complete.obs")
-          png("correlation_matrix.png", width = 800, height = 600)
-          corrplot(cor_matrix, method = "circle")
-          dev.off()
+          cat("Cleaned numeric data dimensions:", dim(numeric_data_clean), "\n")
           
-          # Heatmap (use correlation matrix for visualization)
-          png("heatmap.png", width = 800, height = 600)
-          pheatmap(cor_matrix, main = "Metabolite Correlation Heatmap")
-          dev.off()
+          if (ncol(numeric_data_clean) > 1 && nrow(numeric_data_clean) > 1) {
+            # PCA analysis with cleaned data
+            pca_result <- prcomp(numeric_data_clean, scale. = TRUE, center = TRUE)
+            
+            # PCA plot
+            png("pca_plot.png", width = 800, height = 600)
+            biplot(pca_result, main = "PCA Analysis - Metabolomics Data", 
+                   xlab = paste0("PC1 (", round(summary(pca_result)$importance[2,1]*100, 1), "%)"),
+                   ylab = paste0("PC2 (", round(summary(pca_result)$importance[2,2]*100, 1), "%)"))
+            dev.off()
+            
+            # Correlation matrix
+            cor_matrix <- cor(numeric_data_clean, use = "complete.obs")
+            png("correlation_matrix.png", width = 1000, height = 800)
+            corrplot(cor_matrix, method = "circle", type = "upper", 
+                     order = "hclust", tl.cex = 0.6, tl.col = "black")
+            dev.off()
+            
+            # Heatmap of top varying metabolites
+            # Select top 50 most variable metabolites for better visualization
+            var_metabolites <- apply(numeric_data_clean, 2, var, na.rm = TRUE)
+            top_metabolites <- head(order(var_metabolites, decreasing = TRUE), 50)
+            
+            png("heatmap.png", width = 1000, height = 800)
+            pheatmap(t(numeric_data_clean[, top_metabolites]), 
+                     scale = "row",
+                     clustering_distance_rows = "correlation",
+                     clustering_distance_cols = "euclidean",
+                     main = "Top 50 Most Variable Metabolites Heatmap",
+                     fontsize_row = 6,
+                     fontsize_col = 8)
+            dev.off()
+          } else {
+            cat("Warning: Not enough clean numeric data for analysis\n")
+            # Create placeholder plots
+            png("pca_plot.png", width = 800, height = 600)
+            plot(1, type="n", main="PCA Analysis - Insufficient clean data")
+            dev.off()
+            
+            png("correlation_matrix.png", width = 800, height = 600)
+            plot(1, type="n", main="Correlation Matrix - Insufficient clean data")
+            dev.off()
+            
+            png("heatmap.png", width = 800, height = 600)
+            plot(1, type="n", main="Heatmap - Insufficient clean data")
+            dev.off()
+          }
         } else {
           cat("Warning: Not enough numeric data for analysis\n")
           # Create empty plots as placeholders
@@ -180,12 +261,10 @@ jobs:
         if Rscript metabolomics_analysis.R; then
           echo "R script executed successfully"
         else
-          echo "R script execution failed, but continuing workflow"
+          echo "R script execution failed, stopping workflow"
           exit_code=$?
           echo "Exit code: $exit_code"
-          # Create minimal output files to prevent workflow failure
-          echo "Analysis failed" > analysis_report.md
-          touch pca_plot.png correlation_matrix.png heatmap.png summary_stats.csv
+          exit $exit_code
         fi
 
     # 5) 結果をリポジトリに保存 ----------------------------------------
