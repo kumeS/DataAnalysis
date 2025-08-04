@@ -1,0 +1,491 @@
+{
+  "name": "Claude Code Multi-Branch Analysis - Optimized",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "input",
+              "value": "{{ $json.topic || 'AI技術と医療応用' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-input",
+      "name": "Set Input Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [280, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "headerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.CLAUDE_API_KEY }}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "claude-3-sonnet-20240229"
+            },
+            {
+              "name": "max_tokens",
+              "value": "1000"
+            },
+            {
+              "name": "messages",
+              "value": "=[{\"role\": \"user\", \"content\": \"与えられたトピックから、2つの異なる観点で検索すべきキーワードを抽出してください。JSON形式で回答してください: {\\\"keywordA\\\": \\\"キーワード1\\\", \\\"keywordB\\\": \\\"キーワード2\\\", \\\"explanation\\\": \\\"説明\\\"}\\n\\nInput: \" + $json.input}]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "extract-keywords",
+      "name": "Extract Search Terms",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [460, 300],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Claude APIレスポンスからキーワードを抽出\nconst response = items[0].json.content[0].text;\nlet keywords;\n\ntry {\n  // JSON部分を抽出\n  const jsonMatch = response.match(/\\{[^}]+\\}/);\n  if (jsonMatch) {\n    keywords = JSON.parse(jsonMatch[0]);\n  } else {\n    // フォールバック：簡単なパースを試行\n    keywords = {\n      keywordA: \"AI技術\",\n      keywordB: \"医療応用\",\n      explanation: \"自動抽出されたキーワード\"\n    };\n  }\n} catch (error) {\n  // エラー時のデフォルト値\n  keywords = {\n    keywordA: \"AI技術\",\n    keywordB: \"医療応用\",\n    explanation: \"パースエラーによるデフォルト値\"\n  };\n}\n\nreturn [\n  {\n    json: {\n      ...items[0].json,\n      keywordA: keywords.keywordA,\n      keywordB: keywords.keywordB,\n      explanation: keywords.explanation\n    }\n  }\n];"
+      },
+      "id": "parse-keywords",
+      "name": "Parse Keywords",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [640, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.serper.dev/search",
+        "authentication": "headerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $env.SERPER_API_KEY || 'demo-key' }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json.keywordA }}"
+            },
+            {
+              "name": "num",
+              "value": "5"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "web-search-a",
+      "name": "Web Search A",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [820, 100],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://api.serper.dev/search",
+        "authentication": "headerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $env.SERPER_API_KEY || 'demo-key' }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json.keywordB }}"
+            },
+            {
+              "name": "num",
+              "value": "5"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "web-search-b",
+      "name": "Web Search B",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [820, 500],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "headerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.CLAUDE_API_KEY }}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "claude-3-sonnet-20240229"
+            },
+            {
+              "name": "max_tokens",
+              "value": "1500"
+            },
+            {
+              "name": "messages",
+              "value": "=[{\"role\": \"user\", \"content\": \"以下の検索結果を要約・分析してください。要点を3つに絞ってまとめてください。\\n\\n検索結果: \" + JSON.stringify($json.organic || [])}]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "summarize-a",
+      "name": "Summarize A",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1020, 100],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "headerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.CLAUDE_API_KEY }}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "claude-3-sonnet-20240229"
+            },
+            {
+              "name": "max_tokens",
+              "value": "1500"
+            },
+            {
+              "name": "messages",
+              "value": "=[{\"role\": \"user\", \"content\": \"以下の検索結果を要約・分析してください。要点を3つに絞ってまとめてください。\\n\\n検索結果: \" + JSON.stringify($json.organic || [])}]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "summarize-b",
+      "name": "Summarize B",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1020, 500],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByIndex",
+        "options": {}
+      },
+      "id": "merge-summaries",
+      "name": "Merge Summaries",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [1220, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "headerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.CLAUDE_API_KEY }}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "claude-3-sonnet-20240229"
+            },
+            {
+              "name": "max_tokens",
+              "value": "2000"
+            },
+            {
+              "name": "messages",
+              "value": "=[{\"role\": \"user\", \"content\": \"以下の2つの要約を統合して、最終的な分析レポートを作成してください。\\n\\n要約A: \" + ($node['Summarize A'].json.content ? $node['Summarize A'].json.content[0].text : '要約A取得失敗') + \"\\n\\n要約B: \" + ($node['Summarize B'].json.content ? $node['Summarize B'].json.content[0].text : '要約B取得失敗') + \"\\n\\n統合レポートを作成し、結論と提言を含めてください。\"}]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "integrate-report",
+      "name": "Integrate & Report",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1420, 300],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "functionCode": "// 最終レポートの整形とフォーマット\nconst report = items[0].json.content ? items[0].json.content[0].text : 'レポート生成に失敗しました';\nconst timestamp = new Date().toISOString();\n\nconst formattedReport = `# 🤖 Claude Code Multi-Branch Analysis Report\n\n**実行日時:** ${timestamp}\n**分析対象:** ${$node['Set Input Data'].json.input}\n\n## 🔍 抽出されたキーワード\n- **キーワードA:** ${$node['Parse Keywords'].json.keywordA}\n- **キーワードB:** ${$node['Parse Keywords'].json.keywordB}\n\n## 📊 統合分析結果\n\n${report}\n\n---\n*Generated by n8n × Claude Code Multi-Branch Analysis Pipeline*\n*実行ID: ${timestamp}*`;\n\nreturn [{\n  json: {\n    report: formattedReport,\n    timestamp: timestamp,\n    keywordA: $node['Parse Keywords'].json.keywordA,\n    keywordB: $node['Parse Keywords'].json.keywordB,\n    input: $node['Set Input Data'].json.input\n  }\n}];"
+      },
+      "id": "format-report",
+      "name": "Format Final Report",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1620, 300]
+    },
+    {
+      "parameters": {
+        "channel": "#reports",
+        "text": "📋 **Multi-Branch Analysis 完了！**\\n\\n🔍 **分析対象:** {{ $json.input }}\\n📅 **実行時刻:** {{ $json.timestamp }}\\n🔑 **キーワード:** {{ $json.keywordA }} / {{ $json.keywordB }}\\n\\n詳細レポートが生成されました。",
+        "attachments": [
+          {
+            "color": "good",
+            "title": "分析レポート",
+            "text": "{{ $json.report }}",
+            "footer": "Claude Code Multi-Branch Analysis"
+          }
+        ]
+      },
+      "id": "slack-output",
+      "name": "Slack Output",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [1820, 300]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Input Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Input Data": {
+      "main": [
+        [
+          {
+            "node": "Extract Search Terms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Search Terms": {
+      "main": [
+        [
+          {
+            "node": "Parse Keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Keywords": {
+      "main": [
+        [
+          {
+            "node": "Web Search A",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Web Search B",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Web Search A": {
+      "main": [
+        [
+          {
+            "node": "Summarize A",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Web Search B": {
+      "main": [
+        [
+          {
+            "node": "Summarize B",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize A": {
+      "main": [
+        [
+          {
+            "node": "Merge Summaries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize B": {
+      "main": [
+        [
+          {
+            "node": "Merge Summaries",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Summaries": {
+      "main": [
+        [
+          {
+            "node": "Integrate & Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Integrate & Report": {
+      "main": [
+        [
+          {
+            "node": "Format Final Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Final Report": {
+      "main": [
+        [
+          {
+            "node": "Slack Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "timezone": "Asia/Tokyo",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "saveDataErrorExecution": "all"
+  },
+  "meta": {
+    "instanceId": "claude-code-multi-branch-analysis",
+    "description": "Optimized multi-branch analysis workflow with Claude integration and web search capabilities",
+    "createdAt": "2025-08-04T02:01:00.000Z",
+    "updatedAt": "2025-08-04T02:01:00.000Z"
+  },
+  "id": "multi-branch-analysis-template",
+  "tags": ["claude-code", "multi-branch", "analysis", "web-search", "automation"]
+}
