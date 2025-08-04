@@ -1,0 +1,167 @@
+{
+  "name": "API Monitoring Workflow Template",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "id": "monitor-trigger",
+      "name": "Monitor Trigger",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.apiEndpoint }}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "health-check",
+      "name": "Health Check",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// APIレスポンス分析\nconst response = items[0];\nconst statusCode = response.json ? 200 : 500; // Simplified\nconst responseTime = Date.now() - (response.headers?.['request-start'] || Date.now());\n\nconst healthStatus = {\n  timestamp: new Date().toISOString(),\n  endpoint: '{{ $json.apiEndpoint }}',\n  status: statusCode < 400 ? 'healthy' : 'unhealthy',\n  statusCode: statusCode,\n  responseTimeMs: responseTime,\n  isAlert: statusCode >= 400 || responseTime > 5000\n};\n\nreturn [{\n  json: healthStatus\n}];"
+      },
+      "id": "analyze-response",
+      "name": "Analyze Response",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.isAlert }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "check-alert",
+      "name": "Check Alert",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "channel": "#alerts",
+        "text": "🚨 API アラート発生！\n\n**エンドポイント:** {{ $json.endpoint }}\n**ステータス:** {{ $json.status }}\n**ステータスコード:** {{ $json.statusCode }}\n**レスポンス時間:** {{ $json.responseTimeMs }}ms\n**発生時刻:** {{ $json.timestamp }}"
+      },
+      "id": "send-alert",
+      "name": "Send Alert",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Claude Code による障害分析\nconst healthData = items[0].json;\n\nconst analysis = {\n  ...healthData,\n  claudeAnalysis: {\n    severity: healthData.statusCode >= 500 ? 'critical' : 'warning',\n    possibleCauses: [\n      healthData.statusCode >= 500 ? 'サーバー内部エラー' : 'クライアントエラー',\n      healthData.responseTimeMs > 5000 ? 'パフォーマンス問題' : 'レスポンス時間正常',\n      'ネットワーク接続の問題の可能性'\n    ],\n    recommendations: [\n      'サーバーログの確認',\n      'データベース接続状況の確認',\n      'CPUとメモリ使用率の監視',\n      '依存サービスの状態確認'\n    ],\n    autoActions: [\n      '詳細ログの収集',\n      '関連チームへの通知',\n      'エスカレーション手順の開始'\n    ]\n  }\n};\n\nreturn [{ json: analysis }];"
+      },
+      "id": "claude-incident-analysis",
+      "name": "Claude Incident Analysis",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1340, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "// 正常状態のログ記録\nconst healthData = items[0].json;\n\nconst logEntry = {\n  ...healthData,\n  logType: 'health_check',\n  message: `API健全性確認完了: ${healthData.endpoint} - ${healthData.status}`\n};\n\nreturn [{ json: logEntry }];"
+      },
+      "id": "log-healthy-status",
+      "name": "Log Healthy Status",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1120, 400]
+    }
+  ],
+  "connections": {
+    "Monitor Trigger": {
+      "main": [
+        [
+          {
+            "node": "Health Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Health Check": {
+      "main": [
+        [
+          {
+            "node": "Analyze Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Response": {
+      "main": [
+        [
+          {
+            "node": "Check Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Alert": {
+      "main": [
+        [
+          {
+            "node": "Send Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log Healthy Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Alert": {
+      "main": [
+        [
+          {
+            "node": "Claude Incident Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "meta": {
+    "instanceId": "claude-code-automation",
+    "description": "Claude Code integrated API monitoring and incident analysis",
+    "createdAt": "2025-08-04T01:43:00.000Z",
+    "updatedAt": "2025-08-04T01:43:00.000Z"
+  },
+  "id": "api-monitoring-template",
+  "tags": ["claude-code", "monitoring", "api", "alerts"]
+}
